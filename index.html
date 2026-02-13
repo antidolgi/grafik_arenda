@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Графики работы — Февраль 2026</title>
+    <!-- Подключаем библиотеки -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 5px;
+        }
+        
+        .header {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #475569;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background: #e2e8f0;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .tab:active {
+            transform: scale(0.98);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .controls {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .control-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex-direction: column;
+        }
+        
+        .control-item {
+            flex: 1;
+            min-width: 100%;
+        }
+        
+        .control-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 14px;
+        }
+        
+        .employee-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            flex-wrap: wrap;
+        }
+        
+        .employee-row:hover {
+            background: #f0f7ff;
+            border-color: #93c5fd;
+        }
+        
+        .employee-row input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        
+        .employee-row input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .employee-row select {
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 180px;
+            touch-action: manipulation;
+        }
+        
+        .employee-row select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            color: #4b5563;
+            width: 100%;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 10px 15px;
+            width: 100%;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-remove {
+            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+            color: white;
+            padding: 10px 12px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .btn-remove:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            flex-direction: column;
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 12px 20px;
+            font-size: 14px;
+            display: none;
+            width: 100%;
+        }
+        
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+        }
+        
+        .btn-download-pdf {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-download-excel {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-download-html {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        }
+        
+        .schedule-table-container {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        .schedule-table thead th {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+        
+        .schedule-table tbody td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+            font-size: 13px;
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
+        
+        .schedule-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        .schedule-table tbody tr:hover {
+            background: #f0f7ff;
+        }
+        
+        .schedule-table tbody tr.today {
+            background: #fef3c7 !important;
+            font-weight: 600;
+        }
+        
+        .date-cell {
+            font-weight: 600;
+            color: #1e3a8a;
+            min-width: 90px;
+            font-size: 14px;
+        }
+        
+        .day-cell {
+            color: #475569;
+            font-size: 12px;
+            min-width: 70px;
+        }
+        
+        .employee-cell {
+            min-width: 100px;
+            font-weight: 500;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            touch-action: manipulation;
+        }
+        
+        .working {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .weekend {
+            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+            color: white;
+        }
+        
+        .time-cell {
+            min-width: 90px;
+            padding: 8px;
+            background: #fff9db;
+            border: 1px dashed #fbbf24;
+            font-size: 12px;
+        }
+        
+        .note-cell {
+            min-width: 150px;
+            padding: 8px;
+            background: #f0f9ff;
+            border: 1px dashed #3b82f6;
+            font-size: 12px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 6px;
+        }
+        
+        .legend-working {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .legend-weekend {
+            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+        }
+        
+        /* Адаптивные стили для планшетов */
+        @media (min-width: 768px) {
+            .control-row {
+                flex-direction: row;
+            }
+            
+            .control-item {
+                min-width: 250px;
+            }
+            
+            .download-buttons {
+                flex-direction: row;
+            }
+            
+            .btn {
+                font-size: 15px;
+            }
+        }
+        
+        /* Адаптивные стили для десктопов */
+        @media (min-width: 1024px) {
+            body {
+                padding: 20px;
+            }
+            
+            .container {
+                max-width: 1200px;
+                padding: 0;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .schedule-table {
+                min-width: 1000px;
+            }
+            
+            .schedule-table thead th {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+            
+            .schedule-table tbody td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .controls, .download-buttons {
+                display: none !important;
+            }
+            
+            .schedule-table-container {
+                display: block !important;
+                border-radius: 0;
+                padding: 15px;
+                box-shadow: none;
+            }
+            
+            .schedule-table {
+                font-size: 10px;
+                page-break-inside: auto;
+            }
+            
+            .schedule-table thead th {
+                background: #3b82f6 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .employee-cell, .time-cell, .note-cell {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .schedule-table tbody tr {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Графики работы</h1>
+            <p>Два независимых графика для управляющего и сотрудников</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('schedule-work')">График работы</button>
+            <button class="tab" onclick="switchTab('schedule-time')">График времени</button>
+        </div>
+        
+        <!-- График работы (для управляющего) -->
+        <div id="schedule-work" class="tab-content active">
+            <div class="controls">
+                <div class="control-row">
+                    <div class="control-item">
+                        <label>Месяц и год:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="monthSelectWork" class="btn btn-secondary" style="width: 100%;">
+                                <option value="1">Январь</option>
+                                <option value="2" selected>Февраль</option>
+                                <option value="3">Март</option>
+                                <option value="4">Апрель</option>
+                                <option value="5">Май</option>
+                                <option value="6">Июнь</option>
+                                <option value="7">Июль</option>
+                                <option value="8">Август</option>
+                                <option value="9">Сентябрь</option>
+                                <option value="10">Октябрь</option>
+                                <option value="11">Ноябрь</option>
+                                <option value="12">Декабрь</option>
+                            </select>
+                            <select id="yearSelectWork" class="btn btn-secondary" style="width: 100%;">
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-item">
+                        <label>Сотрудники и тип графика:</label>
+                        <div id="employees-list-work">
+                            <div class="employee-row">
+                                <input type="text" placeholder="ФИО сотрудника" value="Симанов Максим">
+                                <select class="btn btn-secondary" onchange="updateScheduleType(this)">
+                                    <option value="manager">Управляющий (будние дни)</option>
+                                    <option value="2on2off">2 через 2 (работа)</option>
+                                    <option value="2off2on">2 через 2 (выходные)</option>
+                                    <option value="custom">Свои выходные</option>
+                                </select>
+                                <input type="text" placeholder="Дни выходных" style="display: none;" disabled>
+                                <button class="btn btn-remove" onclick="removeEmployee(this)">🗑️</button>
+                            </div>
+                            <div class="employee-row">
+                                <input type="text" placeholder="ФИО сотрудника" value="Поткин Кирилл">
+                                <select class="btn btn-secondary" onchange="updateScheduleType(this)">
+                                    <option value="manager">Управляющий (будние дни)</option>
+                                    <option value="2on2off" selected>2 через 2 (работа)</option>
+                                    <option value="2off2on">2 через 2 (выходные)</option>
+                                    <option value="custom">Свои выходные</option>
+                                </select>
+                                <input type="text" placeholder="Дни выходных" style="display: none;" disabled>
+                                <button class="btn btn-remove" onclick="removeEmployee(this)">🗑️</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-add" onclick="addEmployeeRow('work')" style="margin-top: 10px; width: 100%;">
+                            ➕ Добавить сотрудника
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="generateWorkSchedule()" style="width: 100%; margin-top: 15px;">
+                    📊 Сформировать график
+                </button>
+            </div>
+            
+            <div class="schedule-table-container" id="scheduleContainerWork">
+                <table class="schedule-table" id="scheduleTableWork">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>День недели</th>
+                            <th>Симанов Максим</th>
+                            <th>Поткин Кирилл</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Данные будут сгенерированы здесь -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="download-buttons" id="downloadButtonsWork">
+                <button class="btn btn-download btn-download-pdf" onclick="downloadWorkPDF()">
+                    📄 Скачать в PDF
+                </button>
+                <button class="btn btn-download btn-download-excel" onclick="downloadWorkExcel()">
+                    📊 Скачать в Excel
+                </button>
+                <button class="btn btn-download btn-download-html" onclick="downloadWorkHTML()">
+                    💾 Скачать в HTML
+                </button>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-working"></div>
+                    <span>Работает</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-weekend"></div>
+                    <span>Выходной</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- График времени (для сотрудников) -->
+        <div id="schedule-time" class="tab-content">
+            <div class="controls">
+                <div class="control-row">
+                    <div class="control-item">
+                        <label>Месяц и год:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="monthSelectTime" class="btn btn-secondary" style="width: 100%;">
+                                <option value="1">Январь</option>
+                                <option value="2" selected>Февраль</option>
+                                <option value="3">Март</option>
+                                <option value="4">Апрель</option>
+                                <option value="5">Май</option>
+                                <option value="6">Июнь</option>
+                                <option value="7">Июль</option>
+                                <option value="8">Август</option>
+                                <option value="9">Сентябрь</option>
+                                <option value="10">Октябрь</option>
+                                <option value="11">Ноябрь</option>
+                                <option value="12">Декабрь</option>
+                            </select>
+                            <select id="yearSelectTime" class="btn btn-secondary" style="width: 100%;">
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-item">
+                        <label>Сотрудники:</label>
+                        <div id="employees-list-time">
+                            <div class="employee-row">
+                                <input type="text" placeholder="ФИО сотрудника" value="Симанов Максим">
+                                <button class="btn btn-remove" onclick="removeEmployee(this)">🗑️</button>
+                            </div>
+                            <div class="employee-row">
+                                <input type="text" placeholder="ФИО сотрудника" value="Поткин Кирилл">
+                                <button class="btn btn-remove" onclick="removeEmployee(this)">🗑️</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-add" onclick="addEmployeeRow('time')" style="margin-top: 10px; width: 100%;">
+                            ➕ Добавить сотрудника
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="generateTimeSchedule()" style="width: 100%; margin-top: 15px;">
+                    📊 Сформировать график
+                </button>
+            </div>
+            
+            <div class="schedule-table-container" id="scheduleContainerTime">
+                <table class="schedule-table" id="scheduleTableTime">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>День недели</th>
+                            <th>Симанов Максим</th>
+                            <th>Поткин Кирилл</th>
+                            <th>Комментарий</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Данные будут сгенерированы здесь -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="download-buttons" id="downloadButtonsTime">
+                <button class="btn btn-download btn-download-pdf" onclick="downloadTimePDF()">
+                    📄 Скачать в PDF
+                </button>
+                <button class="btn btn-download btn-download-excel" onclick="downloadTimeExcel()">
+                    📊 Скачать в Excel
+                </button>
+                <button class="btn btn-download btn-download-html" onclick="downloadTimeHTML()">
+                    💾 Скачать в HTML
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Скрыть все табы
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Показать нужный таб
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+        }
+        
+        function updateScheduleType(select) {
+            const row = select.closest('.employee-row');
+            const customInput = row.querySelector('input[type="text"]:last-of-type');
+            
+            if (select.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.disabled = false;
+            } else {
+                customInput.style.display = 'none';
+                customInput.disabled = true;
+            }
+        }
+        
+        function addEmployeeRow(tabType) {
+            const list = document.getElementById(`employees-list-${tabType}`);
+            const row = document.createElement('div');
+            row.className = 'employee-row';
+            
+            if (tabType === 'work') {
+                row.innerHTML = `
+                    <input type="text" placeholder="ФИО сотрудника">
+                    <select class="btn btn-secondary" onchange="updateScheduleType(this)">
+                        <option value="manager">Управляющий (будние дни)</option>
+                        <option value="2on2off">2 через 2 (работа)</option>
+                        <option value="2off2on">2 через 2 (выходные)</option>
+                        <option value="custom">Свои выходные</option>
+                    </select>
+                    <input type="text" placeholder="Дни выходных" style="display: none;" disabled>
+                    <button class="btn btn-remove" onclick="removeEmployee(this)">🗑️</button>
+                `;
+            } else {
+                row.innerHTML = `
+                    <input type="text" placeholder="ФИО сотрудника">
+                    <button class="btn btn-remove" onclick="removeEmployee(this)">🗑️</button>
+                `;
+            }
+            
+            list.appendChild(row);
+        }
+        
+        function removeEmployee(btn) {
+            const rows = btn.closest('.employee-row').parentElement.querySelectorAll('.employee-row');
+            if (rows.length > 1) {
+                btn.closest('.employee-row').remove();
+            } else {
+                alert('Нужен хотя бы один сотрудник!');
+            }
+        }
+        
+        function getDaysOffFor2on2off(startDay = 1, daysInMonth = 28) {
+            const daysOff = [];
+            for (let day = startDay; day <= daysInMonth; day += 4) {
+                daysOff.push(day + 2, day + 3);
+            }
+            return daysOff.filter(d => d >= 1 && d <= daysInMonth);
+        }
+        
+        function getDaysOffFor2off2on(startDay = 1, daysInMonth = 28) {
+            const daysOff = [];
+            for (let day = startDay; day <= daysInMonth; day += 4) {
+                daysOff.push(day, day + 1);
+            }
+            return daysOff.filter(d => d >= 1 && d <= daysInMonth);
+        }
+        
+        function getWorkScheduleData() {
+            // Получаем месяц и год
+            const month = parseInt(document.getElementById('monthSelectWork').value) - 1;
+            const year = parseInt(document.getElementById('yearSelectWork').value);
+            
+            // Определяем количество дней в месяце
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Получаем данные о сотрудниках
+            const employeeRows = document.querySelectorAll('#employees-list-work .employee-row');
+            const employees = [];
+            
+            employeeRows.forEach(row => {
+                const name = row.querySelector('input[type="text"]:first-of-type').value.trim();
+                const type = row.querySelector('select').value;
+                const customDays = row.querySelector('input[type="text"]:last-of-type').value;
+                
+                if (name) {
+                    let daysOff = [];
+                    
+                    if (type === 'manager') {
+                        // Управляющий - выходные суббота и воскресенье
+                        for (let day = 1; day <= daysInMonth; day++) {
+                            const date = new Date(year, month, day);
+                            const dayOfWeek = date.getDay(); // 0 = Вс, 6 = Сб
+                            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                                daysOff.push(day);
+                            }
+                        }
+                    } else if (type === '2on2off') {
+                        daysOff = getDaysOffFor2on2off(1, daysInMonth);
+                    } else if (type === '2off2on') {
+                        daysOff = getDaysOffFor2off2on(1, daysInMonth);
+                    } else if (type === 'custom' && customDays) {
+                        daysOff = customDays.split(',').map(d => parseInt(d.trim())).filter(d => !isNaN(d));
+                    }
+                    
+                    employees.push({
+                        name: name,
+                        type: type,
+                        daysOff: daysOff
+                    });
+                }
+            });
+            
+            return {
+                month: month,
+                year: year,
+                daysInMonth: daysInMonth,
+                employees: employees
+            };
+        }
+        
+        function generateWorkSchedule() {
+            // Получаем месяц и год
+            const month = parseInt(document.getElementById('monthSelectWork').value) - 1;
+            const year = parseInt(document.getElementById('yearSelectWork').value);
+            
+            // Определяем количество дней в месяце
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Получаем данные о сотрудниках
+            const employeeRows = document.querySelectorAll('#employees-list-work .employee-row');
+            const employees = [];
+            
+            employeeRows.forEach(row => {
+                const name = row.querySelector('input[type="text"]:first-of-type').value.trim();
+                const type = row.querySelector('select').value;
+                const customDays = row.querySelector('input[type="text"]:last-of-type').value;
+                
+                if (name) {
+                    let daysOff = [];
+                    
+                    if (type === 'manager') {
+                        // Управляющий - выходные суббота и воскресенье
+                        for (let day = 1; day <= daysInMonth; day++) {
+                            const date = new Date(year, month, day);
+                            const dayOfWeek = date.getDay(); // 0 = Вс, 6 = Сб
+                            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                                daysOff.push(day);
+                            }
+                        }
+                    } else if (type === '2on2off') {
+                        daysOff = getDaysOffFor2on2off(1, daysInMonth);
+                    } else if (type === '2off2on') {
+                        daysOff = getDaysOffFor2off2on(1, daysInMonth);
+                    } else if (type === 'custom' && customDays) {
+                        daysOff = customDays.split(',').map(d => parseInt(d.trim())).filter(d => !isNaN(d));
+                    }
+                    
+                    employees.push({
+                        name: name,
+                        type: type,
+                        daysOff: daysOff
+                    });
+                }
+            });
+            
+            // Генерируем таблицу
+            const table = document.getElementById('scheduleTableWork');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            
+            // Обновляем заголовки таблицы
+            let headerHTML = `
+                <tr>
+                    <th>Дата</th>
+                    <th>День недели</th>
+            `;
+            
+            employees.forEach(employee => {
+                headerHTML += `<th>${employee.name}</th>`;
+            });
+            
+            headerHTML += `</tr>`;
+            
+            thead.innerHTML = headerHTML;
+            
+            // Генерируем строки таблицы
+            tbody.innerHTML = '';
+            
+            // Генерируем строки для каждого дня
+            for (let day = 1; day <= daysInMonth; day++) {
+                const row = document.createElement('tr');
+                
+                // Определяем день недели
+                const date = new Date(year, month, day);
+                const dayName = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'][date.getDay()];
+                
+                // Формируем HTML строки
+                let rowHTML = `
+                    <td class="date-cell">${day}.${(month + 1).toString().padStart(2, '0')}.${year}</td>
+                    <td class="day-cell">${dayName}</td>
+                `;
+                
+                // Статус каждого сотрудника
+                employees.forEach(employee => {
+                    const isDayOff = employee.daysOff.includes(day);
+                    const statusClass = isDayOff ? 'weekend' : 'working';
+                    const statusText = isDayOff ? 'Выходной' : 'Работает';
+                    
+                    rowHTML += `
+                        <td class="employee-cell ${statusClass}" onclick="toggleStatus(this)">
+                            ${statusText}
+                        </td>
+                    `;
+                });
+                
+                row.innerHTML = rowHTML;
+                
+                // Подсветка сегодняшнего дня
+                const today = new Date();
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    row.classList.add('today');
+                }
+                
+                tbody.appendChild(row);
+            }
+            
+            // Показываем таблицу и кнопки скачивания
+            document.getElementById('scheduleContainerWork').style.display = 'block';
+            document.getElementById('downloadButtonsWork').style.display = 'flex';
+            
+            // Прокручиваем к таблице
+            document.getElementById('scheduleContainerWork').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function generateTimeSchedule() {
+            // Получаем данные о графике работы
+            const workSchedule = getWorkScheduleData();
+            
+            // Получаем месяц и год
+            const month = workSchedule.month;
+            const year = workSchedule.year;
+            const daysInMonth = workSchedule.daysInMonth;
+            
+            // Получаем данные о сотрудниках для графика времени
+            const employeeRows = document.querySelectorAll('#employees-list-time .employee-row');
+            const employees = [];
+            
+            employeeRows.forEach(row => {
+                const name = row.querySelector('input[type="text"]').value.trim();
+                if (name) {
+                    employees.push(name);
+                }
+            });
+            
+            // Генерируем таблицу
+            const table = document.getElementById('scheduleTableTime');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            
+            // Обновляем заголовки таблицы
+            let headerHTML = `
+                <tr>
+                    <th>Дата</th>
+                    <th>День недели</th>
+            `;
+            
+            employees.forEach(employee => {
+                headerHTML += `<th>${employee}</th>`;
+            });
+            
+            headerHTML += `<th>Комментарий</th>`;
+            headerHTML += `</tr>`;
+            
+            thead.innerHTML = headerHTML;
+            
+            // Генерируем строки таблицы
+            tbody.innerHTML = '';
+            
+            // Генерируем строки для каждого дня
+            for (let day = 1; day <= daysInMonth; day++) {
+                const row = document.createElement('tr');
+                
+                // Определяем день недели
+                const date = new Date(year, month, day);
+                const dayName = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'][date.getDay()];
+                
+                // Формируем HTML строки
+                let rowHTML = `
+                    <td class="date-cell">${day}.${(month + 1).toString().padStart(2, '0')}.${year}</td>
+                    <td class="day-cell">${dayName}</td>
+                `;
+                
+                // Поля для времени и статуса
+                employees.forEach(employee => {
+                    // Проверяем, работает ли сотрудник в этот день
+                    const employeeData = workSchedule.employees.find(e => e.name === employee);
+                    const isDayOff = employeeData && employeeData.daysOff.includes(day);
+                    
+                    if (isDayOff) {
+                        rowHTML += `
+                            <td class="employee-cell weekend">
+                                Выходной
+                            </td>
+                        `;
+                    } else {
+                        rowHTML += `
+                            <td class="time-cell">
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <input type="text" class="time-input" value="8" style="width: 100%; border: none; background: transparent; text-align: center;" placeholder="Приход">
+                                    <input type="text" class="time-input" value="1" style="width: 100%; border: none; background: transparent; text-align: center;" placeholder="Обед">
+                                    <input type="text" class="time-input" value="22" style="width: 100%; border: none; background: transparent; text-align: center;" placeholder="Уход">
+                                    <input type="text" class="time-input" value="13" style="width: 100%; border: none; background: transparent; text-align: center;" placeholder="Отработка">
+                                </div>
+                            </td>
+                        `;
+                    }
+                });
+                
+                // Столбец комментариев
+                rowHTML += `
+                    <td class="note-cell" contenteditable="true"></td>
+                `;
+                
+                row.innerHTML = rowHTML;
+                
+                // Подсветка сегодняшнего дня
+                const today = new Date();
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    row.classList.add('today');
+                }
+                
+                tbody.appendChild(row);
+            }
+            
+            // Показываем таблицу и кнопки скачивания
+            document.getElementById('scheduleContainerTime').style.display = 'block';
+            document.getElementById('downloadButtonsTime').style.display = 'flex';
+            
+            // Прокручиваем к таблице
+            document.getElementById('scheduleContainerTime').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function toggleStatus(cell) {
+            if (cell.classList.contains('working')) {
+                cell.classList.remove('working');
+                cell.classList.add('weekend');
+                cell.textContent = 'Выходной';
+            } else {
+                cell.classList.remove('weekend');
+                cell.classList.add('working');
+                cell.textContent = 'Работает';
+            }
+        }
+        
+        function downloadWorkPDF() {
+            const doc = new jsPDF('landscape', 'mm', 'a4');
+            
+            // Заголовок
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('График работы на ' + 
+                document.getElementById('monthSelectWork').options[document.getElementById('monthSelectWork').selectedIndex].text + 
+                ' ' + document.getElementById('yearSelectWork').value, 140, 15, { align: 'center' });
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Дата формирования: ' + new Date().toLocaleDateString('ru-RU'), 140, 22, { align: 'center' });
+            
+            // Получаем данные таблицы
+            const table = document.getElementById('scheduleTableWork');
+            const headers = [];
+            const rows = [];
+            
+            // Заголовки
+            const headerCells = table.querySelectorAll('thead th');
+            headerCells.forEach(cell => {
+                headers.push(cell.textContent);
+            });
+            
+            // Данные
+            const bodyRows = table.querySelectorAll('tbody tr');
+            bodyRows.forEach(tr => {
+                const rowData = [];
+                const cells = tr.querySelectorAll('td');
+                
+                cells.forEach(td => {
+                    rowData.push(td.textContent);
+                });
+                
+                rows.push(rowData);
+            });
+            
+            // Настройки таблицы
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 30,
+                theme: 'striped',
+                headStyles: { 
+                    fillColor: [59, 130, 246],
+                    textColor: 255,
+                    fontSize: 10
+                },
+                alternateRowStyles: {
+                    fillColor: [241, 245, 249]
+                },
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 25 },
+                },
+                didParseCell: function(data) {
+                    if (data.section === 'body') {
+                        const colIndex = data.column.index;
+                        
+                        // Раскрашиваем ячейки сотрудников
+                        if (colIndex > 1) {
+                            const cellText = data.cell.text[0];
+                            if (cellText === 'Работает') {
+                                data.cell.styles.fillColor = [5, 150, 105];
+                                data.cell.styles.textColor = 255;
+                            } else if (cellText === 'Выходной') {
+                                data.cell.styles.fillColor = [239, 68, 68];
+                                data.cell.styles.textColor = 255;
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Сохраняем
+            doc.save('grafik_raboty_' + 
+                document.getElementById('monthSelectWork').value + 
+                '_' + document.getElementById('yearSelectWork').value + '.pdf');
+        }
+        
+        function downloadWorkExcel() {
+            const table = document.getElementById('scheduleTableWork');
+            const wb = XLSX.utils.book_new();
+            
+            // Создаем массив данных
+            const data = [];
+            
+            // Заголовки
+            const headers = [];
+            table.querySelectorAll('thead th').forEach(th => {
+                headers.push(th.textContent);
+            });
+            data.push(headers);
+            
+            // Данные
+            table.querySelectorAll('tbody tr').forEach(tr => {
+                const rowData = [];
+                const cells = tr.querySelectorAll('td');
+                
+                cells.forEach(td => {
+                    rowData.push(td.textContent);
+                });
+                
+                data.push(rowData);
+            });
+            
+            // Создаем лист
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // Настройки ширины столбцов
+            ws['!cols'] = [
+                { wch: 10 }, // Дата
+                { wch: 10 }, // День недели
+            ];
+            
+            // Добавляем ширину для сотрудников
+            for (let i = 2; i < headers.length; i++) {
+                ws['!cols'].push({ wch: 15 });
+            }
+            
+            // Добавляем лист в книгу
+            XLSX.utils.book_append_sheet(wb, ws, 'График ' + 
+                document.getElementById('monthSelectWork').options[document.getElementById('monthSelectWork').selectedIndex].text + 
+                ' ' + document.getElementById('yearSelectWork').value);
+            
+            // Сохраняем
+            XLSX.writeFile(wb, 'grafik_raboty_' + 
+                document.getElementById('monthSelectWork').value + 
+                '_' + document.getElementById('yearSelectWork').value + '.xlsx');
+        }
+        
+        function downloadWorkHTML() {
+            const container = document.getElementById('scheduleContainerWork');
+            const content = `
+                <!DOCTYPE html>
+                <html lang="ru">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>График работы — ${document.getElementById('monthSelectWork').options[document.getElementById('monthSelectWork').selectedIndex].text} ${document.getElementById('yearSelectWork').value}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+                        .schedule-table { width: 100%; border-collapse: collapse; background: white; }
+                        .schedule-table th { 
+                            background: #3b82f6; 
+                            color: white; 
+                            padding: 12px; 
+                            text-align: center; 
+                            font-weight: bold;
+                            position: sticky;
+                            top: 0;
+                        }
+                        .schedule-table td { 
+                            padding: 10px; 
+                            text-align: center; 
+                            border-bottom: 1px solid #ddd; 
+                        }
+                        .schedule-table tr:nth-child(even) { background: #f8f9fa; }
+                        .employee-cell { padding: 8px; border-radius: 5px; font-weight: 500; }
+                        .working { background: #059669; color: white; }
+                        .weekend { background: #ef4444; color: white; }
+                        .date-cell { font-weight: bold; }
+                        @media print {
+                            .schedule-table th { 
+                                background: #3b82f6 !important; 
+                                color: white !important; 
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                            .employee-cell {
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1 style="text-align: center; margin-bottom: 30px; color: #333;">График работы на ${document.getElementById('monthSelectWork').options[document.getElementById('monthSelectWork').selectedIndex].text} ${document.getElementById('yearSelectWork').value}</h1>
+                    ${container.innerHTML}
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'grafik_raboty_' + 
+                document.getElementById('monthSelectWork').value + 
+                '_' + document.getElementById('yearSelectWork').value + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function downloadTimePDF() {
+            const doc = new jsPDF('landscape', 'mm', 'a4');
+            
+            // Заголовок
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('График времени на ' + 
+                document.getElementById('monthSelectTime').options[document.getElementById('monthSelectTime').selectedIndex].text + 
+                ' ' + document.getElementById('yearSelectTime').value, 140, 15, { align: 'center' });
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Дата формирования: ' + new Date().toLocaleDateString('ru-RU'), 140, 22, { align: 'center' });
+            
+            // Получаем данные таблицы
+            const table = document.getElementById('scheduleTableTime');
+            const headers = [];
+            const rows = [];
+            
+            // Заголовки
+            const headerCells = table.querySelectorAll('thead th');
+            headerCells.forEach(cell => {
+                headers.push(cell.textContent);
+            });
+            
+            // Данные
+            const bodyRows = table.querySelectorAll('tbody tr');
+            bodyRows.forEach(tr => {
+                const rowData = [];
+                const cells = tr.querySelectorAll('td');
+                
+                cells.forEach(td => {
+                    if (td.classList.contains('time-cell')) {
+                        const inputs = td.querySelectorAll('input');
+                        let timeData = 'Приход: ';
+                        if (inputs[0].value) timeData += inputs[0].value + '\n';
+                        timeData += 'Обед: ';
+                        if (inputs[1].value) timeData += inputs[1].value + '\n';
+                        timeData += 'Уход: ';
+                        if (inputs[2].value) timeData += inputs[2].value + '\n';
+                        timeData += 'Отработка: ';
+                        if (inputs[3].value) timeData += inputs[3].value;
+                        
+                        rowData.push(timeData);
+                    } else {
+                        rowData.push(td.textContent);
+                    }
+                });
+                
+                rows.push(rowData);
+            });
+            
+            // Настройки таблицы
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 30,
+                theme: 'striped',
+                headStyles: { 
+                    fillColor: [59, 130, 246],
+                    textColor: 255,
+                    fontSize: 10
+                },
+                alternateRowStyles: {
+                    fillColor: [241, 245, 249]
+                },
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 25 },
+                }
+            });
+            
+            // Сохраняем
+            doc.save('grafik_vremeni_' + 
+                document.getElementById('monthSelectTime').value + 
+                '_' + document.getElementById('yearSelectTime').value + '.pdf');
+        }
+        
+        function downloadTimeExcel() {
+            const table = document.getElementById('scheduleTableTime');
+            const wb = XLSX.utils.book_new();
+            
+            // Создаем массив данных
+            const data = [];
+            
+            // Заголовки
+            const headers = [];
+            table.querySelectorAll('thead th').forEach(th => {
+                headers.push(th.textContent);
+            });
+            data.push(headers);
+            
+            // Данные
+            table.querySelectorAll('tbody tr').forEach(tr => {
+                const rowData = [];
+                const cells = tr.querySelectorAll('td');
+                
+                cells.forEach(td => {
+                    if (td.classList.contains('time-cell')) {
+                        const inputs = td.querySelectorAll('input');
+                        let timeData = 'Приход: ';
+                        if (inputs[0].value) timeData += inputs[0].value + '\n';
+                        timeData += 'Обед: ';
+                        if (inputs[1].value) timeData += inputs[1].value + '\n';
+                        timeData += 'Уход: ';
+                        if (inputs[2].value) timeData += inputs[2].value + '\n';
+                        timeData += 'Отработка: ';
+                        if (inputs[3].value) timeData += inputs[3].value;
+                        
+                        rowData.push(timeData);
+                    } else {
+                        rowData.push(td.textContent);
+                    }
+                });
+                
+                data.push(rowData);
+            });
+            
+            // Создаем лист
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // Настройки ширины столбцов
+            ws['!cols'] = [
+                { wch: 10 }, // Дата
+                { wch: 10 }, // День недели
+            ];
+            
+            // Добавляем ширину для сотрудников
+            for (let i = 2; i < headers.length - 1; i++) {
+                ws['!cols'].push({ wch: 25 });
+            }
+            
+            // Добавляем ширину для комментариев
+            ws['!cols'].push({ wch: 30 });
+            
+            // Добавляем лист в книгу
+            XLSX.utils.book_append_sheet(wb, ws, 'График времени ' + 
+                document.getElementById('monthSelectTime').options[document.getElementById('monthSelectTime').selectedIndex].text + 
+                ' ' + document.getElementById('yearSelectTime').value);
+            
+            // Сохраняем
+            XLSX.writeFile(wb, 'grafik_vremeni_' + 
+                document.getElementById('monthSelectTime').value + 
+                '_' + document.getElementById('yearSelectTime').value + '.xlsx');
+        }
+        
+        function downloadTimeHTML() {
+            const container = document.getElementById('scheduleContainerTime');
+            const content = `
+                <!DOCTYPE html>
+                <html lang="ru">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>График времени — ${document.getElementById('monthSelectTime').options[document.getElementById('monthSelectTime').selectedIndex].text} ${document.getElementById('yearSelectTime').value}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+                        .schedule-table { width: 100%; border-collapse: collapse; background: white; }
+                        .schedule-table th { 
+                            background: #3b82f6; 
+                            color: white; 
+                            padding: 12px; 
+                            text-align: center; 
+                            font-weight: bold;
+                            position: sticky;
+                            top: 0;
+                        }
+                        .schedule-table td { 
+                            padding: 10px; 
+                            text-align: center; 
+                            border-bottom: 1px solid #ddd; 
+                        }
+                        .schedule-table tr:nth-child(even) { background: #f8f9fa; }
+                        .time-cell { background: #fff9db; border: 1px dashed #fbbf24; }
+                        .note-cell { background: #f0f9ff; border: 1px dashed #3b82f6; }
+                        .date-cell { font-weight: bold; }
+                        @media print {
+                            .schedule-table th { 
+                                background: #3b82f6 !important; 
+                                color: white !important; 
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                            .time-cell, .note-cell {
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1 style="text-align: center; margin-bottom: 30px; color: #333;">График времени на ${document.getElementById('monthSelectTime').options[document.getElementById('monthSelectTime').selectedIndex].text} ${document.getElementById('yearSelectTime').value}</h1>
+                    ${container.innerHTML}
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'grafik_vremeni_' + 
+                document.getElementById('monthSelectTime').value + 
+                '_' + document.getElementById('yearSelectTime').value + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Добавляем обработчик для предотвращения двойного клика на мобильных
+        document.addEventListener('DOMContentLoaded', function() {
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(event) {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+        });
+        
+        // Генерируем график при загрузке страницы
+        window.onload = function() {
+            generateWorkSchedule();
+            generateTimeSchedule();
+        };
+    </script>
+</body>
+</html>
